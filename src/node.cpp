@@ -59,18 +59,18 @@ run(int argc, char **argv)
     return 1;
   }
 
-  ros::Publisher publisher = nh.advertise<sensor_msgs::LaserScan>("scan", 1024);
+  ros::Publisher publisher = nh.advertise<sensor_msgs::LaserScan>("scan", 1024); // publishes to scan topic with max buffer size of 1024
 
-  LidarLiteDriver driver((uint8_t)i2c_bus, i2c_address);
-  driver.configure(LidarLiteDriver::OperationMode::DEFAULT);
+  LidarLiteDriver driver((uint8_t)i2c_bus, i2c_address);  // initializes driver class object
+  driver.configure(LidarLiteDriver::OperationMode::DEFAULT); // configures driver to default mode (high speed short range)
 
   while (ros::ok()) {
-    auto distance = driver.distance(true);
+    auto distance = driver.distance(true); // gets distance from driver. c++ note: auto type is determined by intializer at runtime
     if (!distance) {
-      continue;
+      continue; // skips rest of while loop (no distance measurement received)
     }
 
-    sensor_msgs::LaserScan msg;
+    sensor_msgs::LaserScan msg; // declare laserscan msg
     msg.header.frame_id = frame_id;
     msg.header.stamp = ros::Time::now();
 
