@@ -28,7 +28,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <ros/ros.h>
-
+#include <ros/rate.h>
 namespace lidar_lite {
 
 int
@@ -64,6 +64,7 @@ run(int argc, char **argv)
   LidarLiteDriver driver((uint8_t)i2c_bus, i2c_address);  // initializes driver class object
   driver.configure(LidarLiteDriver::OperationMode::DEFAULT); // configures driver to default mode (high speed short range)
 
+  ros::Rate r(5);
   while (ros::ok()) {
     auto distance = driver.distance(true); // gets distance from driver. c++ note: auto type is determined by intializer at runtime
     if (!distance) {
@@ -87,6 +88,7 @@ run(int argc, char **argv)
     msg.intensities.push_back(distance->value);
 
     publisher.publish(msg);
+    r.sleep();
   }
 
   return 0;
